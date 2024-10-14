@@ -1,15 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"net/http"
-)
-
 func main() {
-	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8000", nil)
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "hello 22!\n")
+	server := NewAPIServer(":8000")
+	server.RUN()
 }
