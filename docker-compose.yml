@@ -9,3 +9,30 @@ services:
     # Important to bind/mount your codebase dir to /app dir for live reload
     volumes:
       - ./:/app
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+    networks:
+      - featureflag-network
+  db:
+    image: postgres:16-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=featureflagdb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d featureflagdb"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    networks:
+      - featureflag-network
+networks:
+    featureflag-network:
+      driver: bridge
